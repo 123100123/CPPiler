@@ -3,6 +3,7 @@ class CFG:
         self.rules = {}
         self.start = "Start"
         self.fill()
+        self.first = {}
         pass
 
 
@@ -45,4 +46,34 @@ class CFG:
         self.add_production("C", ['"sum="', "number", "string", "identifier"])
         self.add_production("H", ["<< C H", "ε"])
         self.add_production("V", ["return 0 ;", "ε"])
+        
+
+    def calculate_first(self):
+        self.first = {non_terminal: set() for non_terminal in self.rules}
+        
+        changed = True
+        while changed:
+            changed = False
+            for variable, productions in self.rules.items():
+                for production in productions:
+                    for symbol in production:
+                        if symbol not in self.rules:  # reached a terminal
+                            if symbol not in self.first[variable]:
+                                self.first[variable].add(symbol)
+                                changed = True
+                            break
+                        else:  # reached a variable
+                            before = len(self.first[variable])
+                            self.first[variable].update(self.first[symbol] - {"ε"})
+                            if "ε" in self.first[symbol]:
+                                continue
+                            after = len(self.first[variable])
+                            if before != after:
+                                changed = True
+                            break
+                    else:  # no terminals were found so we have to add ε as an elemnt if the first
+                        if "ε" not in self.first[variable]:
+                            self.first[variable].add("ε")
+                            changed = True
+
 
