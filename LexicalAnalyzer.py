@@ -2,28 +2,18 @@ import re
 
 class LexicalAnalyzer:
     token_patterns = [
-        # Reserved words (including #include, using, namespace, std, etc.)
         (r"\b(?:int|float|void|return|if|while|cin|cout|continue|break|include|using|namespace|std|main)\b", "RESERVEDWORD"),
-
-        # Include directive (ignore anything after #include)
         (r"#include.*", "INCLUDE"),
-
-        # Strings (anything between quotation marks)
         (r'\".*?\"', "STRING"),
-
-        # Identifiers (letters followed by letters or digits)
         (r"[a-zA-Z][a-zA-Z0-9]*", "IDENTIFIER"),
-
-        # Numbers (one or more digits)
-        (r"[0-9]+", "NUMBER"),
-
-        # Symbols (single and multi-character operators)
+        (r"[0-9]+(\.[0-9]+)?", "NUMBER"),
         (r"\+\+|--|\+=|-=|\*=|/=|==|!=|>=|<=|&&|\|\||<<|>>", "SYMBOL"),
         (r"[+\-*/=><!&|;,:\[\]{}()\|]", "SYMBOL"),
     ]
 
     def __init__(self):
         self.compiled_patterns = self.compile_patterns()
+        self.variable_types = {}
 
     def compile_patterns(self):
         return [(re.compile(pattern), token_type) for pattern, token_type in self.token_patterns]
@@ -40,7 +30,7 @@ class LexicalAnalyzer:
                     lexeme = match.group(0)
 
                     if token_type == "INCLUDE":
-                        tokens.append("#include")  # Ignore anything after #include
+                        tokens.append("#include")
                     elif token_type == "IDENTIFIER":
                         tokens.append("identifier")
                     elif token_type == "NUMBER":
@@ -55,7 +45,7 @@ class LexicalAnalyzer:
 
             if not match:
                 if line[position].isspace():
-                    position += 1  # Skip whitespace
+                    position += 1
                 else:
                     raise ValueError(f"Unexpected character: {line[position]}")
 
@@ -84,19 +74,76 @@ class LexicalAnalyzer:
             return False
 
         return True
-    
+
+    def detect_wrong_allocations(self, line: str, line_number: int) -> list:
+        errors = []
+        line = line.strip()
+
+        if re.match(r"(int|float|void)\s+[a-zA-Z][a-zA-Z0-9]*\s*\(.*\)\s*\{?", line):
+            return errors
+
+        declaration_match = re.match(r"(int|float)\s+([a-zA-Z][a-zA-Z0-9]*)\s*;", line)
+        if declaration_match:
+            var_type = declaration_match.group(1)
+            var_name = declaration_match.group(2)
+            self.variable_types[var_name] = var_type
+            return errors
+        
+        combined_match = re.match(r"(int|float)\s+([a-zA-Z][a-zA-Z0-9]*)\s*=\s*(.*);", line)
+        if combined_match:
+            var_type = combined_match.group(1)
+            var_name = combined_match.group(2)
+            value = combined_match.group(3)
+
+            self.variable_types[var_name] = var_type
+
+            if var_type == "int":
+                if re.match(r"\".*\"", value):
+                    errors.append(f"Error: Cannot assign string to int variable '{var_name}', line:{line_number}")
+                elif re.match(r"[0-9]+\.[0-9]+", value):
+                    errors.append(f"Error: Cannot assign float to int variable '{var_name}', line:{line_number}")
+            elif var_type == "float":
+                if re.match(r"\".*\"", value):
+                    errors.append(f"Error: Cannot assign string to float variable '{var_name}', line:{line_number}")
+
+            return errors
+
+
+        assignment_match = re.match(r"([a-zA-Z][a-zA-Z0-9]*)\s*=\s*(.*);", line)
+        if assignment_match:
+            var_name = assignment_match.group(1)
+            value = assignment_match.group(2)
+
+            if var_name in self.variable_types:
+                var_type = self.variable_types[var_name]
+
+                if var_type == "int":
+                    if re.match(r"\".*\"", value):
+                        errors.append(f"Error: Cannot assign string to int variable '{var_name}', line:{line_number}")
+                    elif re.match(r"[0-9]+\.[0-9]+", value):
+                        errors.append(f"Error: Cannot assign float to int variable '{var_name}', line:{line_number}")
+
+                elif var_type == "float":
+                    if re.match(r"\".*\"", value):
+                        errors.append(f"Error: Cannot assign string to float variable '{var_name}', line:{line_number}")
+
+        return errors
 
     def get_tokens(self, code):
         tokens = []
         missing_semicolon_lines = []
-        
-        for _,line in enumerate(code.split("\n")):
+        wrong_allocations = []
+
+        for line_number, line in enumerate(code.split("\n")):
             if self.missing_semicolon(line):
-                missing_semicolon_lines.append(_+1)
+                missing_semicolon_lines.append(line_number + 1)
+
+            wrong_allocations.extend(self.detect_wrong_allocations(line, line_number + 1))
 
             tokens.extend(self.analyze(line))
-        
+
         self.tokens = tokens
+        self.wrong_allocations = wrong_allocations
         self.semicolon_errors = missing_semicolon_lines
 
         return tokens
