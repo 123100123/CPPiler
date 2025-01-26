@@ -61,8 +61,43 @@ class LexicalAnalyzer:
 
         return tokens
 
+    def missing_semicolon(self, line: str) -> bool:
+        line = line.strip()
+
+        if not line:
+            return False
+
+        exceptions = [
+            "if", "else", "while", "for", "switch", "case", "default",
+            "{", "}",
+            "#include"
+        ]
+
+        for exception in exceptions:
+            if line.startswith(exception):
+                return False
+
+        if "(" in line and ")" in line:
+            return False
+
+        if line.endswith(";"):
+            return False
+
+        return True
+    
+
     def get_tokens(self, code):
         tokens = []
-        for line in code.split("\n"):
+        missing_semicolon_lines = []
+        
+        for _,line in enumerate(code.split("\n")):
+            if self.missing_semicolon(line):
+                missing_semicolon_lines.append(_+1)
+
             tokens.extend(self.analyze(line))
+        
+        self.tokens = tokens
+        self.semicolon_errors = missing_semicolon_lines
+
         return tokens
+
