@@ -24,7 +24,7 @@ class CFG:
         self.add_production("N", ["using namespace std ;", "ε"])
         self.add_production("M", ["int main ( ) { T V }"])
         self.add_production("T", ["Id T", "L T", "Loop T", "Input T", "Output T", "ε"])
-        self.add_production("V", ["return 0 ;", "ε"])
+        self.add_production("V", ["return number ;", "ε"]) # Added 'number' instead of zero after the return statement
         self.add_production("Id", ["int L", "float L"])
         self.add_production("L", ["identifier Assign Z"])
         self.add_production("Z", [", identifier Assign Z", ";"])
@@ -128,13 +128,8 @@ class ParseTable:
                     for terminal in self.cfg.follow[variable]:
                         parse_table[variable][terminal] = production
 
-        # Debugging: Print parse table entries
-        for variable, mappings in parse_table.items():
-            print(f"{variable}: {dict(mappings)}")
-
         self.parse_table = parse_table
         return self.parse_table
-
 
     def save_to_file(self, output_file, specified_order, terminals):
         headers = ["Non-Terminal"] + terminals

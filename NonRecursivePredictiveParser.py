@@ -18,13 +18,10 @@ class NonRecursivePredictiveParser:
                 top = stack.pop()
                 current_token = input_tokens[cursor]
 
-                # Debugging: Print current stack and token
-                f.write(f"Stack: {stack}, Input Token: {current_token}, Top: {top}\n")
-
                 if top == "$":
                     if current_token == "$":
                         # Successfully parsed all input
-                        f.write(f"Parsing completed. Productions saved to '{output_file}'.\n")
+                        print(f"Parsing completed.Productions saved to '{output_file}'.")
                         return productions_used
                     else:
                         raise ValueError(f"Unexpected token '{current_token}' at the end of input.")
@@ -35,6 +32,7 @@ class NonRecursivePredictiveParser:
                 elif top in self.parse_table:  # Non-terminal match
                     if current_token in self.parse_table[top]:
                         production = self.parse_table[top][current_token]
+                        f.write(f"{top} -> {' '.join(production)}\n")  # Write transition in specified format
                         productions_used.append(f"{top} -> {' '.join(production)}")
                         # Handle epsilon productions (skip adding to stack)
                         if production != ["ε"]:

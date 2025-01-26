@@ -45,6 +45,8 @@ class LexicalAnalyzer:
                         tokens.append("identifier")
                     elif token_type == "NUMBER":
                         tokens.append("number")
+                    elif token_type == "STRING":
+                        tokens.append("string")
                     else:
                         tokens.append(lexeme)
 
