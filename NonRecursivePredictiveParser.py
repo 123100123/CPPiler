@@ -27,6 +27,10 @@ class NonRecursivePredictiveParser:
                 top = stack.pop()
                 current_token = processed_tokens[cursor]
 
+                print(f"Top of Stack: {top}")
+                print(f"Current Token: {current_token}")
+                print(f"Stack after popping: {stack}\n")
+                
                 if top == "$":
                     if current_token == "$":
                         # Successfully parsed
@@ -35,16 +39,17 @@ class NonRecursivePredictiveParser:
                     else:
                         raise ValueError(f"Unexpected token '{current_token}' at the end of input.")
 
-                elif top == current_token:  # Match simple terminal (non-tuple terminal token)
+                elif top == current_token:  # Remove Symbols and Reservewords
                     cursor += 1
 
-                elif top in ["identifier", "number", "string"]:  # Match and remove if top of stack is a terminal symbol
+                elif top in ["identifier", "number", "string"]:  # Remove ["identifier", "number", "string"] from the top of the stack
                     if isinstance(current_token, tuple) and current_token[0] == top:
+                        productions_used.append(f"{top} -> {current_token[1]}")
                         cursor += 1
                     else:
                         raise ValueError(f"Expected {top} but got '{current_token}'.")
-
-                elif top in self.parse_table or (isinstance(current_token, tuple) and current_token[0] in self.parse_table):  # Symbols and ReserveWords - ["identifier", "number", "string"]
+                    
+                elif top in self.parse_table or (isinstance(current_token, tuple) and current_token[0] in self.parse_table):  # Non-terminal Symbols and Transitions in the Parse Table
                     token_key = current_token[0] if isinstance(current_token, tuple) else current_token
                     if token_key in self.parse_table[top]:
                         production = self.parse_table[top][token_key]
@@ -66,6 +71,8 @@ class NonRecursivePredictiveParser:
                                 stack.extend(reversed(production))
                     else:
                         raise ValueError(f"No rule for '{top}' with input '{token_key}' in parse table.")
+                    
+
 
                 else:
                     raise ValueError(f"Unexpected symbol '{top}' on stack.")

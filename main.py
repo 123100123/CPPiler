@@ -42,5 +42,5 @@ productions_used = parser.parse(tokens, output_file="productions_used.txt")
 
 # Build and Display Parse Tree
 parse_tree = ParseTree("Start")
-parse_tree.build_from_productions(productions_used)
+parse_tree.build_from_productions(productions_used,specified_order+["identifier" , "string" , "number"])
 parse_tree.visualize(output_file="parse_tree", format="png")
