@@ -41,11 +41,11 @@ class ParseTree:
             right_symbols = right.split()
 
             if left in current_nodes:
-                parent_node = current_nodes[left][0]
+                parent_node = current_nodes[left][-1]
                 if len(current_nodes[left]) == 1:
                     del current_nodes[left]
                 else:
-                    current_nodes[left] = current_nodes[left][1::]
+                    current_nodes[left] = current_nodes[left][:-1:]
 
                 for symbol in right_symbols:
                     # Create the child node
