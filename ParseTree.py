@@ -1,9 +1,9 @@
 import graphviz
+from collections import defaultdict
 
 class ParseTreeNode:
-    def __init__(self, value, token_value=None):
+    def __init__(self, value):
         self.value = value  # The class of the terminal or non-terminal
-        self.token_value = token_value  # The actual value of the token
         self.children = []
 
     def add_child(self, child_node):
@@ -27,28 +27,31 @@ class ParseTree:
     def _add_nodes(self, dot, node, parent_id=None):
         node_id = id(node)
         label = node.value
-        # if node.token_value:
-        #     label += f" ({node.token_value})"
         dot.node(str(node_id), label)
         if parent_id is not None:
             dot.edge(str(parent_id), str(node_id))
         for child in node.children:
             self._add_nodes(dot, child, node_id)
 
-    def build_from_productions(self, productions):
-        current_nodes = {self.root.value: self.root}
+    def build_from_productions(self, productions, non_terminals):
+        current_nodes = defaultdict(list)
+        current_nodes[self.root.value].append(self.root)
         for production in productions:
             left, right = production.split(" -> ")
             right_symbols = right.split()
+
             if left in current_nodes:
-                parent_node = current_nodes[left]
-                del current_nodes[left]
+                parent_node = current_nodes[left][0]
+                if len(current_nodes[left]) == 1:
+                    del current_nodes[left]
+                else:
+                    current_nodes[left] = current_nodes[left][1::]
+
                 for symbol in right_symbols:
-                    # Check if the symbol is a terminal with a specific value
-                    token_value = None
-                    if symbol in ["number", "identifier", "string"]:
-                        token_value = symbol  # Assign the terminal value as token_value for now
-                    child_node = ParseTreeNode(symbol, token_value)
+                    # Create the child node
+                    child_node = ParseTreeNode(symbol)
                     parent_node.add_child(child_node)
-                    if symbol not in ["number", "identifier", "string", "+", "-", "*", "=", "<", ">", "<=", ">=", "!=", ";", "cin", "cout", "return", "while", "(", ")", "{", "}"]:
-                        current_nodes[symbol] = child_node
+
+                    # Track non-terminal nodes for further expansions
+                    if symbol in non_terminals:
+                        current_nodes[symbol].append(child_node)
