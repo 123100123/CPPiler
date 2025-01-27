@@ -3,6 +3,7 @@ from ParseTable import CFG, ParseTable
 from NonRecursivePredictiveParser import NonRecursivePredictiveParser
 from ParseTree import ParseTree
 
+# Input code to be tested
 input_code = '''
 #include <iostream>
 using namespace std;

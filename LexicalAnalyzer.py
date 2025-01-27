@@ -3,20 +3,20 @@ import re
 class LexicalAnalyzer:
     token_patterns = [
         # Reserved words (including #include, using, namespace, std, etc.)
-        (r"\b(?:int|float|void|return|if|while|cin|cout|continue|break|include|using|namespace|std|main)\b", "RESERVEDWORD"),
-
-        # Include directive (ignore anything after #include)
-        (r"#include.*", "INCLUDE"),
-
+        (r"\b(?:int|float|void|return|if|while|cin|cout|continue|break|using|namespace|std|main)\b", "RESERVEDWORD"),
+        
+        # Include directive (capture #include but ignore content in <> or "")
+        (r"#include\b", "RESERVEDWORD"),
+        
         # Strings (anything between quotation marks)
         (r'\".*?\"', "STRING"),
-
+        
         # Identifiers (letters followed by letters or digits)
         (r"[a-zA-Z][a-zA-Z0-9]*", "IDENTIFIER"),
-
+        
         # Numbers (one or more digits)
         (r"[0-9]+", "NUMBER"),
-
+        
         # Symbols (single and multi-character operators)
         (r"\+\+|--|\+=|-=|\*=|/=|==|!=|>=|<=|&&|\|\||<<|>>", "SYMBOL"),
         (r"[+\-*/=><!&|;,:\[\]{}()\|]", "SYMBOL"),
@@ -39,16 +39,15 @@ class LexicalAnalyzer:
                 if match:
                     lexeme = match.group(0)
 
-                    if token_type == "INCLUDE":
-                        tokens.append("#include")  # Ignore anything after #include
-                    elif token_type == "IDENTIFIER":
-                        tokens.append("identifier")
+                    # Store both the token type and its value
+                    if token_type == "IDENTIFIER":
+                        tokens.append((token_type.lower(), lexeme))
                     elif token_type == "NUMBER":
-                        tokens.append("number")
+                        tokens.append((token_type.lower(), int(lexeme)))
                     elif token_type == "STRING":
-                        tokens.append("string")
+                        tokens.append((token_type.lower(), lexeme)) 
                     else:
-                        tokens.append(lexeme)
+                        tokens.append((token_type, lexeme))
 
                     position = match.end()
                     break
@@ -64,5 +63,7 @@ class LexicalAnalyzer:
     def get_tokens(self, code):
         tokens = []
         for line in code.split("\n"):
+            # Replace entire #include line with just #include
+            line = re.sub(r'#include\s*[<"].*?[>"]', '#include', line)
             tokens.extend(self.analyze(line))
         return tokens

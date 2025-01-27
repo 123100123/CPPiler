@@ -1,8 +1,9 @@
 import graphviz
 
 class ParseTreeNode:
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, value, token_value=None):
+        self.value = value  # The class of the terminal or non-terminal
+        self.token_value = token_value  # The actual value of the token
         self.children = []
 
     def add_child(self, child_node):
@@ -25,7 +26,10 @@ class ParseTree:
 
     def _add_nodes(self, dot, node, parent_id=None):
         node_id = id(node)
-        dot.node(str(node_id), node.value)
+        label = node.value
+        # if node.token_value:
+        #     label += f" ({node.token_value})"
+        dot.node(str(node_id), label)
         if parent_id is not None:
             dot.edge(str(parent_id), str(node_id))
         for child in node.children:
@@ -40,7 +44,11 @@ class ParseTree:
                 parent_node = current_nodes[left]
                 del current_nodes[left]
                 for symbol in right_symbols:
-                    child_node = ParseTreeNode(symbol)
+                    # Check if the symbol is a terminal with a specific value
+                    token_value = None
+                    if symbol in ["number", "identifier", "string"]:
+                        token_value = symbol  # Assign the terminal value as token_value for now
+                    child_node = ParseTreeNode(symbol, token_value)
                     parent_node.add_child(child_node)
                     if symbol not in ["number", "identifier", "string", "+", "-", "*", "=", "<", ">", "<=", ">=", "!=", ";", "cin", "cout", "return", "while", "(", ")", "{", "}"]:
                         current_nodes[symbol] = child_node
