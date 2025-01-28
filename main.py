@@ -1,7 +1,9 @@
 from LexicalAnalyzer import LexicalAnalyzer
+from TokenTable import TokenTable
 from ParseTable import CFG, ParseTable
 from NonRecursivePredictiveParser import NonRecursivePredictiveParser
 from ParseTree import ParseTree
+from SearchInTree import SearchInTree
 
 # Input code to be tested
 input_code = '''
@@ -37,6 +39,10 @@ else:
 
 tokens = analyzer.tokens
 
+# Construct token table
+token_table = TokenTable(tokens)
+token_table.display()
+
 # Construct CFG and Parse Table
 cfg = CFG()
 parse_table_generator = ParseTable(cfg)
@@ -59,7 +65,6 @@ parse_tree.build_from_productions(productions_used,specified_order+["identifier"
 parse_tree.visualize(output_file="parse_tree", format="png")
 
 # Find the first occurrence
-from SearchInTree import SearchInTree
 identifier_to_find = "x"  
 search_in_tree = SearchInTree(parse_tree.root, specified_order + ["identifier", "string", "number"])
 declaration = search_in_tree.find_declaration(identifier_to_find)

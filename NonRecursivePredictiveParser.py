@@ -26,23 +26,18 @@ class NonRecursivePredictiveParser:
             while stack:
                 top = stack.pop()
                 current_token = processed_tokens[cursor]
-
-                # print(f"Top of Stack: {top}")
-                # print(f"Current Token: {current_token}")
-                # print(f"Stack after popping: {stack}\n")
                 
                 if top == "$":
                     if current_token == "$":
-                        # Successfully parsed
                         print(f"Parsing completed. Productions saved to '{output_file}'.")
                         return productions_used
                     else:
                         raise ValueError(f"Unexpected token '{current_token}' at the end of input.")
 
-                elif top == current_token:  # Remove Symbols and Reservewords
+                elif top == current_token:  
                     cursor += 1
 
-                elif top in ["identifier", "number", "string"]:  # Remove ["identifier", "number", "string"] from the top of the stack
+                elif top in ["identifier", "number", "string"]:  
                     if isinstance(current_token, tuple) and current_token[0] == top:
                         productions_used.append(f"{top} -> {current_token[1]}")
                         cursor += 1
@@ -54,16 +49,14 @@ class NonRecursivePredictiveParser:
                     if token_key in self.parse_table[top]:
                         production = self.parse_table[top][token_key]
 
-                        # ["identifier", "number", "string"] as tuples of ("identifier" , x) or ("number", 0) or ("string", "sum=")
+
                         if (len(production) == 1 and production[0] in ["identifier", "number", "string"] and isinstance(current_token, tuple)):
                             
                             f.write(f"{top} -> {current_token[1]}\n")
                             productions_used.append(f"{top} -> {current_token[1]}")
-
-                            # Push only ["identifier", "number", "string"]
+                            
                             stack.append(production[0])
                         else:
-                            # Write production and update stack
                             f.write(f"{top} -> {' '.join(production)}\n")
                             productions_used.append(f"{top} -> {' '.join(production)}")
 

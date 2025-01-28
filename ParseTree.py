@@ -3,7 +3,7 @@ from collections import defaultdict
 
 class ParseTreeNode:
     def __init__(self, value):
-        self.value = value  # The class of the terminal or non-terminal
+        self.value = value 
         self.children = []
 
     def add_child(self, child_node):
@@ -48,11 +48,10 @@ class ParseTree:
                     current_nodes[left] = current_nodes[left][:-1:]
 
                 for symbol in right_symbols:
-                    # Create the child node
                     child_node = ParseTreeNode(symbol)
                     parent_node.add_child(child_node)
 
-                    # Track non-terminal nodes for further expansions
+          
                     if symbol in non_terminals:
                         current_nodes[symbol].append(child_node)
     
