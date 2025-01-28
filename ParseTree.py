@@ -55,3 +55,5 @@ class ParseTree:
                     # Track non-terminal nodes for further expansions
                     if symbol in non_terminals:
                         current_nodes[symbol].append(child_node)
+    
+    

@@ -22,14 +22,14 @@ class NonRecursivePredictiveParser:
 
         productions_used = []
 
-        with open(output_file, "w") as f:
+        with open(output_file, "w",encoding="utf-8") as f:
             while stack:
                 top = stack.pop()
                 current_token = processed_tokens[cursor]
 
-                print(f"Top of Stack: {top}")
-                print(f"Current Token: {current_token}")
-                print(f"Stack after popping: {stack}\n")
+                # print(f"Top of Stack: {top}")
+                # print(f"Current Token: {current_token}")
+                # print(f"Stack after popping: {stack}\n")
                 
                 if top == "$":
                     if current_token == "$":

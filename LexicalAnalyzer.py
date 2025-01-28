@@ -11,9 +11,12 @@ class LexicalAnalyzer:
         (r"[+\-*/=><!&|;,:\[\]{}()\|]", "SYMBOL"),
     ]
 
-    def __init__(self):
+    def __init__(self,code):
         self.compiled_patterns = self.compile_patterns()
         self.variable_types = {}
+        self.semicolon_errors = []
+        self.wrong_allocations = []
+        self.manage_tokens(code)
 
     def compile_patterns(self):
         return [(re.compile(pattern), token_type) for pattern, token_type in self.token_patterns]
@@ -125,7 +128,7 @@ class LexicalAnalyzer:
 
         return errors
 
-    def get_tokens(self, code):
+    def manage_tokens(self, code):
         tokens = []
         missing_semicolon_lines = []
         wrong_allocations = []
@@ -142,6 +145,4 @@ class LexicalAnalyzer:
         self.tokens = tokens
         self.wrong_allocations = wrong_allocations
         self.semicolon_errors = missing_semicolon_lines
-
-        return tokens
 

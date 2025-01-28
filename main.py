@@ -21,8 +21,21 @@ int main(){
 '''
 
 # Lexical Analysis
-analyzer = LexicalAnalyzer()
-tokens = analyzer.get_tokens(input_code)
+analyzer = LexicalAnalyzer(input_code)
+
+if analyzer.semicolon_errors:
+    print("missing semicolon, line: ",end=" ")
+    print(*analyzer.semicolon_errors,sep=", ")
+
+if analyzer.wrong_allocations:
+    print(*analyzer.wrong_allocations,sep="\n")
+
+if analyzer.wrong_allocations or analyzer.semicolon_errors:
+    exit()
+else:
+    print("No errors found!")
+
+tokens = analyzer.tokens
 
 # Construct CFG and Parse Table
 cfg = CFG()

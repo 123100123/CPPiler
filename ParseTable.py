@@ -138,7 +138,7 @@ class ParseTable:
             row = [nt] + [f"[{', '.join(self.parse_table[nt][t])}]" if self.parse_table[nt][t] else "[]" for t in terminals]
             rows.append(row)
 
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(tabulate(rows, headers=headers, tablefmt="grid"))
 
         print(f"Parse table saved to {output_file}.")
