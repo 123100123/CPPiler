@@ -57,3 +57,14 @@ productions_used = parser.parse(tokens, output_file="productions_used.txt")
 parse_tree = ParseTree("Start")
 parse_tree.build_from_productions(productions_used,specified_order+["identifier" , "string" , "number"])
 parse_tree.visualize(output_file="parse_tree", format="png")
+
+# Find the first occurrence
+from SearchInTree import SearchInTree
+identifier_to_find = "x"  
+search_in_tree = SearchInTree(parse_tree.root, specified_order + ["identifier", "string", "number"])
+declaration = search_in_tree.find_declaration(identifier_to_find)
+
+if declaration:
+    print(declaration)
+else:
+    print(f"Identifier '{identifier_to_find}' not found in the parse tree.")
