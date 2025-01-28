@@ -14,7 +14,7 @@ class SearchInTree:
 
                 l_node = current_node.children[1]  
                 
-                result = self._process_l_node(variable_type, l_node, identifier_to_find)
+                result = self.process_l_node(variable_type, l_node, identifier_to_find)
                 if result:  # If declaration is found, return it
                     return result
 
@@ -22,7 +22,7 @@ class SearchInTree:
 
         return None
 
-    def _process_l_node(self, variable_type, l_node, identifier_to_find):
+    def process_l_node(self, variable_type, l_node, identifier_to_find):
         declaration = f"{variable_type} "
         stack = [l_node]
         identifier_parent = None
@@ -39,7 +39,7 @@ class SearchInTree:
                 continue
 
             if current_node.value == "identifier":
-                identifier_node = self._find_terminal(current_node)
+                identifier_node = self.find_terminal(current_node)
                 identifier = identifier_node.value
 
                 if identifier == identifier_to_find:
@@ -53,9 +53,9 @@ class SearchInTree:
                             return declaration
                         elif assign_child:
                             declaration += " = "
-                            number_node = self._find_number_node(assign_node)
+                            number_node = self.find_number_node(assign_node)
                             if number_node:
-                                terminal = self._find_terminal(number_node)
+                                terminal = self.find_terminal(number_node)
                                 declaration += terminal.value
 
                     declaration += ";"
@@ -65,7 +65,7 @@ class SearchInTree:
 
         return None
 
-    def _find_terminal(self, node):
+    def find_terminal(self, node):
         current_node = node
 
         while current_node.value in self.non_terminals:
@@ -73,7 +73,7 @@ class SearchInTree:
 
         return current_node
 
-    def _find_number_node(self, node):
+    def find_number_node(self, node):
         stack = [node]
 
         while stack:
