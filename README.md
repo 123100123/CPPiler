@@ -1,24 +1,25 @@
 
 ---
 
-### **C++ Subset Compiler (Python)**  
+### **3. C++ Subset Compiler (Python)**  
 **Repository:** [CppCompiler-Py](https://github.com/123100123/CPPiler)  
 
 ```markdown
-# ⚙️ C++ Subset Compiler (Python)  
+# ⚙️ C++ Subset Compiler (Python)
 
-A compiler frontend for a subset of C++, featuring lexical analysis and parsing.  
+A compiler frontend for a subset of C++ with lexical analysis and parsing.
 
-## 🛠️ Features  
-- **Lexical Analysis:** Tokenizes code into identifiers, operators, and literals.  
-- **Non-Recursive Parsing:** Uses parse tables for syntax validation.  
-- **AST Generation:** Builds abstract syntax trees for code visualization.  
+## 🚀 Features
+- **Lexical Analysis**: Tokenizes code into identifiers, keywords, and literals.
+- **Non-Recursive Parsing**: Uses predictive parsing with parse tables.
+- **AST Generation**: Builds abstract syntax trees for code visualization.
 
-## 🚀 Technologies  
-- **Language:** Python  
-- **Concepts:** CFGs, predictive parsing  
+## 🛠️ Tech Stack
+![Python](https://img.shields.io/badge/Python-Intermediate-3776AB?style=flat&logo=python&logoColor=white)
+![Compilers](https://img.shields.io/badge/Compilers-LL(1)-003B7B?style=flat)
+![Parsing](https://img.shields.io/badge/Parsing-Predictive-FF6F00?style=flat)
 
-## 📦 Installation  
+## 📦 Installation
 ```bash
-git clone https://github.com/123100123/CPPiler.git  
-cd CPPiler  
+git clone https://github.com/123100123/CPPiler.git
+cd CPPiler
