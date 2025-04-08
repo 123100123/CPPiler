@@ -1,7 +1,7 @@
 
 ---
 
-### **3. C++ Subset Compiler (Python)**  
+### **C++ Subset Compiler (Python)**  
 **Repository:** [CppCompiler-Py](https://github.com/123100123/CPPiler)  
 
 ```markdown
